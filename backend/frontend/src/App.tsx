@@ -21,8 +21,8 @@ function App() {
     const fetchApiInfo = async () => {
       try {
         const [rootResponse, infoResponse] = await Promise.all([
-          axios.get('/api/v1/info'),
-          axios.get('/'),
+          axios.get('/api/info'),
+          axios.get('/api/'),
         ])
         setApiInfo({ ...rootResponse.data, ...infoResponse.data })
         setLoading(false)
