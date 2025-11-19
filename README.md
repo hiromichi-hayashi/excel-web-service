@@ -165,25 +165,24 @@ FastAPIの自動生成ドキュメントは以下のURLで確認できます：
 
 ```
 excel-web-service/
-├── backend/                        # バックエンド（FastAPI ベストプラクティス構造）
+├── backend/                        # バックエンド（MVP向けシンプル構造）
 │   ├── app/                       # FastAPIアプリケーション
 │   │   ├── __init__.py
 │   │   ├── main.py                # メインエントリーポイント
 │   │   ├── api/                   # APIルーティング
 │   │   │   ├── deps.py           # 依存性注入
-│   │   │   └── v1/               # APIバージョン1
-│   │   │       ├── api.py        # ルーター集約
-│   │   │       └── endpoints/    # エンドポイント分離
-│   │   │           ├── health.py
-│   │   │           └── info.py
+│   │   │   ├── api.py            # ルーター集約
+│   │   │   └── endpoints/        # エンドポイント（機能ごとに追加）
+│   │   │       ├── health.py     # ヘルスチェック
+│   │   │       └── info.py       # API情報
 │   │   ├── core/                 # コア機能
 │   │   │   └── config.py        # 設定管理（Pydantic Settings）
 │   │   ├── db/                   # データベース
-│   │   │   ├── base.py          # Base model
+│   │   │   ├── base.py          # SQLAlchemy Base
 │   │   │   └── session.py       # セッション管理
-│   │   ├── models/               # SQLAlchemy モデル
-│   │   ├── schemas/              # Pydantic スキーマ
-│   │   ├── crud/                 # CRUD操作
+│   │   ├── models/               # SQLAlchemyモデル（必要時に追加）
+│   │   ├── schemas/              # Pydanticスキーマ（必要時に追加）
+│   │   ├── services/             # ビジネスロジック（拡張性確保）
 │   │   └── static/               # ビルド済みフロントエンド（本番環境）
 │   ├── frontend/                  # フロントエンドソース（Laravel風）
 │   │   ├── src/
@@ -210,15 +209,20 @@ excel-web-service/
 └── README.md                      # このファイル
 ```
 
+**構造の特徴:**
+- **MVP向けシンプル設計**: バージョニングなし、必要最小限の構成
+- **拡張性確保**: services/, models/, schemas/ は必要時に追加
+- **モノレポ構成**: backend/frontend/ でフロントエンドを同居管理
+
 **開発環境:**
-- フロントエンド: `backend/frontend/` でVite開発サーバーを起動
-- バックエンド: Dockerコンテナで FastAPI実行
+- フロントエンド: `backend/frontend/` でVite開発サーバー（localhost:3000）
+- バックエンド: Dockerコンテナで FastAPI（localhost:8000）
+- API: `/api/` プレフィックス（例: `/api/health`, `/api/info`）
 - 設定: `app/core/config.py` で環境変数を型安全に管理
-- テスト: `pytest` でAPIテストを実行
 
 **本番環境:**
-- `backend/frontend/` で `npm run build` → `backend/app/static/` に出力
-- FastAPIが静的ファイルを配信（1つのサーバーで完結）
+- `npm run build` → `backend/app/static/` に出力
+- FastAPIが静的ファイル配信（1コンテナで完結）
 - Alembicでデータベースマイグレーション管理
 
 ## トラブルシューティング

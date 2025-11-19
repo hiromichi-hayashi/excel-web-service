@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 
 from app.core.config import settings
-from app.api.v1.api import api_router
+from app.api.api import api_router
 
 
 def create_application() -> FastAPI:
@@ -23,7 +23,7 @@ def create_application() -> FastAPI:
         title=settings.PROJECT_NAME,
         description=settings.DESCRIPTION,
         version=settings.VERSION,
-        openapi_url=f"{settings.API_V1_STR}/openapi.json",
+        openapi_url=f"{settings.API_PREFIX}/openapi.json",
     )
 
     # CORS設定
@@ -36,7 +36,7 @@ def create_application() -> FastAPI:
     )
 
     # APIルーターの登録
-    app.include_router(api_router, prefix=settings.API_V1_STR)
+    app.include_router(api_router, prefix=settings.API_PREFIX)
 
     # Static files設定（本番環境用）
     # NOTE: このセクションは最後に配置すること（/{full_path:path}がすべてをキャッチするため）

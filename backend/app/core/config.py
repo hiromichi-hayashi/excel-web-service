@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     )
 
     # API設定
-    API_V1_STR: str = "/api/v1"
+    API_PREFIX: str = "/api"
     PROJECT_NAME: str = "Excel Web Service API"
     VERSION: str = "1.0.0"
     DESCRIPTION: str = "Excel処理を行うWebサービスのAPI"

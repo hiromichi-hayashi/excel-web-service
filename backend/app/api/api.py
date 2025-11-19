@@ -1,16 +1,16 @@
 """
 APIルーター集約
 
-すべてのv1エンドポイントをまとめる
+すべてのエンドポイントをまとめる
 """
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import health, info
+from app.api.endpoints import health, info
 
 api_router = APIRouter()
 
-# ヘルスチェック（プレフィックスなし）
+# ヘルスチェック
 api_router.include_router(health.router, tags=["health"])
 
-# API情報（/api/v1プレフィックス）
+# API情報
 api_router.include_router(info.router, tags=["info"])
