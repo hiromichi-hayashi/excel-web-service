@@ -1,0 +1,15 @@
+[project]
+name = "excel-web-service"
+version = "1.0.0"
+description = "FastAPIを使用したExcel処理Webサービス"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "psycopg2-binary>=2.9.9",
+    "sqlalchemy>=2.0.23",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
