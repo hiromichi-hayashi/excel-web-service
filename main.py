@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.v1.api import api_router
+from app.api.router import api_router
 from app.core.config import settings
 from app.database import engine, Base
 
@@ -12,8 +12,8 @@ app = FastAPI(
 # データベーステーブルを作成
 Base.metadata.create_all(bind=engine)
 
-# API v1ルーターを追加
-app.include_router(api_router, prefix="/api/v1")
+# APIルーターを追加
+app.include_router(api_router, prefix="/api")
 
 
 @app.get("/")
