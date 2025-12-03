@@ -1,4 +1,8 @@
+import os
+from pathlib import Path
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from app.api.router import api_router
 from app.core.config import settings
 from app.database import engine, Base
@@ -15,15 +19,25 @@ Base.metadata.create_all(bind=engine)
 # APIルーターを追加
 app.include_router(api_router, prefix="/api")
 
+# 静的ファイル配信（本番環境用）
+# frontend/dist/ が存在する場合のみマウント
+frontend_dist = Path(__file__).parent / "frontend" / "dist"
+if frontend_dist.exists():
+    app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
 
-@app.get("/")
-async def root():
-    """ルートエンドポイント"""
-    return {
-        "message": "Welcome to Excel Web Service",
-        "docs": "/docs",
-        "version": settings.VERSION,
-    }
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        """フロントエンドのSPAルーティング対応"""
+        # API以外のルートはReactアプリを返す
+        if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("health"):
+            return {"detail": "Not Found"}
+
+        file_path = frontend_dist / full_path
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(file_path)
+
+        # SPAなので全てindex.htmlを返す
+        return FileResponse(frontend_dist / "index.html")
 
 
 @app.get("/health")

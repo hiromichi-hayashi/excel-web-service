@@ -114,14 +114,28 @@ docker-compose exec app uv pip list
 
 ```
 .
-├── Dockerfile            # Python 3.14環境の定義
-├── docker-compose.yml    # app + db の構成
-├── .dockerignore         # Dockerビルドから除外するファイル
-├── .env                  # 環境変数（Git管理外）
-├── .env.example          # 環境変数サンプル
-├── pyproject.toml        # Python依存パッケージ（uv管理）
-├── main.py              # FastAPIアプリケーション
-└── README.md            # このファイル
+├── app/                     # FastAPIアプリケーション
+│   ├── api/                 # APIエンドポイント
+│   │   ├── endpoints/       # 各エンドポイント
+│   │   └── router.py        # ルーター統合
+│   ├── core/                # 設定・セキュリティ
+│   ├── models/              # DBモデル
+│   ├── repositories/        # データアクセス層
+│   ├── schemas/             # Pydanticスキーマ
+│   ├── services/            # ビジネスロジック
+│   └── database.py          # DB接続設定
+├── frontend/                # Reactフロントエンド
+│   ├── src/                 # ソースコード
+│   ├── public/              # 静的ファイル
+│   └── dist/                # ビルド成果物
+├── Dockerfile               # Python 3.14環境の定義
+├── docker-compose.yml       # app + db の構成
+├── .dockerignore            # Dockerビルドから除外するファイル
+├── .env                     # 環境変数（Git管理外）
+├── .env.example             # 環境変数サンプル
+├── pyproject.toml           # Python依存パッケージ（uv管理）
+├── main.py                  # FastAPIエントリーポイント
+└── README.md                # このファイル
 ```
 
 ## データベース接続情報
@@ -138,15 +152,68 @@ DATABASE_URL = "postgresql://postgres:postgres@db:5432/excel_web_service"
 - Password: postgres
 - Database: excel_web_service
 
+## フロントエンド開発
+
+### 開発サーバーの起動
+
+1. フロントエンドディレクトリに移動
+```bash
+cd frontend
+```
+
+2. 依存関係のインストール（初回のみ）
+```bash
+bun install
+```
+
+3. 開発サーバーを起動
+```bash
+bun run dev
+```
+
+4. ブラウザでアクセス
+```
+http://localhost:5173
+```
+
+### 本番ビルド
+
+```bash
+cd frontend
+bun run build
+```
+
+ビルド成果物は `frontend/dist/` に出力されます。
+FastAPIが自動的に配信するため、追加の設定は不要です。
+
+### フロントエンド構成
+
+```
+frontend/
+├── src/           # Reactソースコード
+├── public/        # 静的ファイル
+├── dist/          # ビルド成果物（gitignore）
+├── package.json
+└── vite.config.ts
+```
+
 ## 技術スタック
 
+### バックエンド
 - **Python**: 3.14.0
 - **パッケージマネージャー**: uv
 - **Webフレームワーク**: FastAPI
 - **ASGIサーバー**: Uvicorn
 - **データベース**: PostgreSQL 16
 - **ORM**: SQLAlchemy
+- **認証**: JWT (python-jose + passlib)
 - **コンテナ**: Docker / Docker Compose
+
+### フロントエンド
+- **ランタイム**: Bun
+- **フレームワーク**: React 19
+- **ビルドツール**: Vite 7
+- **言語**: TypeScript 5
 
 ## トラブルシューティング
 

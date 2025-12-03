@@ -39,7 +39,7 @@ venv/
 ENV/
 env/
 
-# Node.js
+# Node.js / Bun
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -51,6 +51,7 @@ yarn-error.log*
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+bun.lockb
 
 # React / Next.js
 .next/
