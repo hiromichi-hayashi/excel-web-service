@@ -1,0 +1,21 @@
+[project]
+name = "excel-web-service"
+version = "1.0.0"
+description = "FastAPIを使用したExcel処理Webサービス"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "psycopg2-binary>=2.9.9",
+    "sqlmodel>=0.0.16",
+    "python-jose[cryptography]>=3.3.0",
+    "bcrypt>=4.0.0",
+    "python-multipart>=0.0.12",
+    "python-dotenv>=1.0.0",
+    "alembic>=1.13.0",
+    "pydantic[email]>=2.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
