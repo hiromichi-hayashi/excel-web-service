@@ -2,12 +2,12 @@ export interface User {
   id: number
   email: string
   username: string
-  is_active: boolean
-  is_superuser: boolean
+  created_at: string
+  updated_at: string | null
 }
 
 export interface LoginRequest {
-  username: string
+  email: string
   password: string
 }
 
@@ -25,7 +25,7 @@ export interface TokenResponse {
 export interface AuthContextType {
   user: User | null
   token: string | null
-  login: (username: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<void>
   register: (email: string, username: string, password: string) => Promise<void>
   logout: () => void
   isLoading: boolean

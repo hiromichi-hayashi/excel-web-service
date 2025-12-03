@@ -29,9 +29,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth()
   }, [token])
 
-  const login = async (username: string, password: string) => {
+  const login = async (email: string, password: string) => {
     try {
-      const response = await apiClient.login(username, password)
+      const response = await apiClient.login(email, password)
       const newToken = response.access_token
 
       apiClient.setToken(newToken)
@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const newUser = await apiClient.register({ email, username, password })
 
       // 登録後に自動ログイン
-      await login(username, password)
+      await login(email, password)
     } catch (error) {
       throw error
     }

@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 from fastapi import HTTPException, status
 
 from app.models.user import User
@@ -30,16 +30,16 @@ def register_user(db: Session, user: UserCreate) -> User:
         db=db,
         email=user.email,
         username=user.username,
-        hashed_password=hashed_password
+        password=hashed_password
     )
 
 
-def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
-    """ユーザー認証"""
-    user = user_repository.get_user_by_username(db, username)
+def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
+    """ユーザー認証（emailベース）"""
+    user = user_repository.get_user_by_email(db, email)
     if not user:
         return None
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password):
         return None
     return user
 
@@ -50,7 +50,7 @@ def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[
 
     # パスワードが含まれている場合はハッシュ化
     if "password" in update_data:
-        update_data["hashed_password"] = get_password_hash(update_data.pop("password"))
+        update_data["password"] = get_password_hash(update_data["password"])
 
     return user_repository.update_user(db, user_id, **update_data)
 
@@ -60,6 +60,6 @@ def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
     return user_repository.get_user(db, user_id)
 
 
-def get_user_by_username(db: Session, username: str) -> Optional[User]:
-    """ユーザー名でユーザーを取得"""
-    return user_repository.get_user_by_username(db, username)
+def get_user_by_email(db: Session, email: str) -> Optional[User]:
+    """メールアドレスでユーザーを取得"""
+    return user_repository.get_user_by_email(db, email)

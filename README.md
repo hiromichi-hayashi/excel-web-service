@@ -74,15 +74,41 @@ docker-compose logs -f db
 ```
 
 ### データベース管理
+
+#### マイグレーション
+```bash
+# マイグレーションファイルを自動生成
+docker compose exec app alembic revision --autogenerate -m "マイグレーション名"
+
+# マイグレーション実行
+docker compose exec app alembic upgrade head
+
+# マイグレーションを1つ戻す
+docker compose exec app alembic downgrade -1
+
+# 現在のマイグレーション状態を確認
+docker compose exec app alembic current
+
+# マイグレーション履歴を確認
+docker compose exec app alembic history
+```
+
+#### シーダー（テストデータ投入）
+```bash
+# シーダーを実行
+docker compose exec app python -m app.database.seeds.user_seeder
+```
+
+#### その他のデータベース操作
 ```bash
 # PostgreSQLに接続
-docker-compose exec db psql -U postgres -d excel_web_service
+docker compose exec db psql -U postgres -d excel_web_service
 
 # データベースのバックアップ
-docker-compose exec db pg_dump -U postgres excel_web_service > backup.sql
+docker compose exec db pg_dump -U postgres excel_web_service > backup.sql
 
 # データベースのリストア
-docker-compose exec -T db psql -U postgres excel_web_service < backup.sql
+docker compose exec -T db psql -U postgres excel_web_service < backup.sql
 ```
 
 ### コンテナ操作
@@ -119,15 +145,21 @@ docker-compose exec app uv pip list
 │   │   ├── endpoints/       # 各エンドポイント
 │   │   └── router.py        # ルーター統合
 │   ├── core/                # 設定・セキュリティ
-│   ├── models/              # DBモデル
+│   ├── models/              # SQLModelモデル（テーブル定義）
+│   ├── schemas/             # Pydanticスキーマ（API用）
 │   ├── repositories/        # データアクセス層
-│   ├── schemas/             # Pydanticスキーマ
 │   ├── services/            # ビジネスロジック
-│   └── database.py          # DB接続設定
+│   └── database/            # データベース関連
+│       ├── database.py      # DB接続設定
+│       ├── migrations/      # Alembicマイグレーション
+│       │   ├── versions/    # マイグレーションファイル
+│       │   └── env.py       # Alembic設定
+│       └── seeds/           # シーダー（テストデータ）
 ├── frontend/                # Reactフロントエンド
 │   ├── src/                 # ソースコード
 │   ├── public/              # 静的ファイル
 │   └── dist/                # ビルド成果物
+├── alembic.ini              # Alembic設定ファイル
 ├── Dockerfile               # Python 3.14環境の定義
 ├── docker-compose.yml       # app + db の構成
 ├── .dockerignore            # Dockerビルドから除外するファイル
@@ -205,8 +237,9 @@ frontend/
 - **Webフレームワーク**: FastAPI
 - **ASGIサーバー**: Uvicorn
 - **データベース**: PostgreSQL 16
-- **ORM**: SQLAlchemy
-- **認証**: JWT (python-jose + passlib)
+- **ORM**: SQLModel (SQLAlchemy + Pydantic統合)
+- **マイグレーション**: Alembic
+- **認証**: JWT (python-jose + bcrypt)
 - **コンテナ**: Docker / Docker Compose
 
 ### フロントエンド

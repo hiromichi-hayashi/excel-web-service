@@ -1,6 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext"
-import { LoginForm } from "@/components/auth/LoginForm"
-import { RegisterForm } from "@/components/auth/RegisterForm"
+import { AuthPage } from "@/components/auth/AuthPage"
 import { Dashboard } from "@/components/Dashboard"
 
 function App() {
@@ -21,23 +20,7 @@ function App() {
     return <Dashboard />
   }
 
-  return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="container mx-auto max-w-4xl space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight">Excel Web Service</h1>
-          <p className="text-muted-foreground">
-            FastAPI + React with JWT Authentication
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          <LoginForm />
-          <RegisterForm />
-        </div>
-      </div>
-    </div>
-  )
+  return <AuthPage />
 }
 
 export default App

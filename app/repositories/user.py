@@ -1,34 +1,38 @@
 from typing import Optional
-from sqlalchemy.orm import Session
+from sqlmodel import Session, select
 from app.models.user import User
 
 
 def get_user(db: Session, user_id: int) -> Optional[User]:
     """IDでユーザーを取得"""
-    return db.query(User).filter(User.id == user_id).first()
+    statement = select(User).where(User.id == user_id)
+    return db.exec(statement).first()
 
 
 def get_user_by_email(db: Session, email: str) -> Optional[User]:
     """メールアドレスでユーザーを取得"""
-    return db.query(User).filter(User.email == email).first()
+    statement = select(User).where(User.email == email)
+    return db.exec(statement).first()
 
 
 def get_user_by_username(db: Session, username: str) -> Optional[User]:
     """ユーザー名でユーザーを取得"""
-    return db.query(User).filter(User.username == username).first()
+    statement = select(User).where(User.username == username)
+    return db.exec(statement).first()
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100) -> list[User]:
     """ユーザー一覧を取得"""
-    return db.query(User).offset(skip).limit(limit).all()
+    statement = select(User).offset(skip).limit(limit)
+    return list(db.exec(statement).all())
 
 
-def create_user(db: Session, email: str, username: str, hashed_password: str) -> User:
+def create_user(db: Session, email: str, username: str, password: str) -> User:
     """新規ユーザーを作成"""
     db_user = User(
         email=email,
         username=username,
-        hashed_password=hashed_password,
+        password=password,
     )
     db.add(db_user)
     db.commit()

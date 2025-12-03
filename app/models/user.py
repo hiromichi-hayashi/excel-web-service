@@ -1,17 +1,16 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
-from sqlalchemy.sql import func
-from app.database import Base
+from datetime import datetime
+from sqlmodel import SQLModel, Field
+from typing import Optional
 
 
-class User(Base):
-    """ユーザーモデル"""
-    __tablename__ = "users"
+class User(SQLModel, table=True):
+    """ユーザーマスターモデル"""
+    __tablename__ = "m_user"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    username = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # 基本情報
+    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    email: str = Field(unique=True, index=True, nullable=False, max_length=255)
+    username: str = Field(unique=True, index=True, nullable=False, max_length=50)
+    password: str = Field(nullable=False, max_length=255)
+    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    updated_at: Optional[datetime] = Field(default=None, sa_column_kwargs={"onupdate": datetime.utcnow})

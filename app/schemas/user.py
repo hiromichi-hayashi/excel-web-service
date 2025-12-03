@@ -1,8 +1,10 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from datetime import datetime
+from sqlmodel import SQLModel
+from pydantic import EmailStr
 
 
-class UserBase(BaseModel):
+class UserBase(SQLModel):
     """ユーザーの基本スキーマ"""
     email: EmailStr
     username: str
@@ -13,41 +15,35 @@ class UserCreate(UserBase):
     password: str
 
 
-class UserUpdate(BaseModel):
+class UserUpdate(SQLModel):
     """ユーザー更新スキーマ"""
     email: Optional[EmailStr] = None
     username: Optional[str] = None
     password: Optional[str] = None
-    is_active: Optional[bool] = None
 
 
-class UserInDB(UserBase):
-    """データベース内のユーザースキーマ"""
-    id: int
-    hashed_password: str
-    is_active: bool
-    is_superuser: bool
-
-    class Config:
-        from_attributes = True
-
-
-class User(UserBase):
+class UserRead(UserBase):
     """ユーザーレスポンススキーマ"""
     id: int
-    is_active: bool
-    is_superuser: bool
+    created_at: datetime
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
 
 
-class Token(BaseModel):
+class UserLogin(SQLModel):
+    """ユーザーログインスキーマ"""
+    email: EmailStr
+    password: str
+
+
+class Token(SQLModel):
     """トークンレスポンススキーマ"""
     access_token: str
     token_type: str
 
 
-class TokenData(BaseModel):
+class TokenData(SQLModel):
     """トークンペイロードスキーマ"""
-    username: Optional[str] = None
+    email: Optional[str] = None

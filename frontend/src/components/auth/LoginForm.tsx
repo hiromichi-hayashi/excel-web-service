@@ -8,7 +8,7 @@ import { toast } from "sonner"
 
 export function LoginForm() {
   const { login } = useAuth()
-  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -17,7 +17,7 @@ export function LoginForm() {
     setIsLoading(true)
 
     try {
-      await login(username, password)
+      await login(email, password)
       toast.success("ログインに成功しました")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "ログインに失敗しました")
@@ -35,13 +35,13 @@ export function LoginForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">ユーザー名</Label>
+            <Label htmlFor="email">メールアドレス</Label>
             <Input
-              id="username"
-              type="text"
-              placeholder="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isLoading}
             />

@@ -1,15 +1,16 @@
 from datetime import timedelta
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 
 from app.core.config import settings
 from app.core.security import create_access_token
 from app.services import user as user_service
 from app.database import get_db
-from app.schemas.user import User, UserCreate, Token, TokenData
+from app.schemas.user import UserRead, UserCreate, Token, TokenData, UserLogin
+from app.models.user import User
 
 router = APIRouter()
 
@@ -29,14 +30,14 @@ async def get_current_user(
 
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
 
-    user = user_service.get_user_by_username(db, username=token_data.username)
+    user = user_service.get_user_by_email(db, email=token_data.email)
     if user is None:
         raise credentials_exception
     return user
@@ -46,12 +47,10 @@ async def get_current_active_user(
     current_user: Annotated[User, Depends(get_current_user)]
 ) -> User:
     """アクティブなユーザーを取得"""
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="非アクティブなユーザーです")
     return current_user
 
 
-@router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     """新規ユーザー登録"""
     return user_service.register_user(db=db, user=user)
@@ -59,26 +58,26 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    credentials: UserLogin,
     db: Session = Depends(get_db)
 ):
-    """ログイン"""
-    user = user_service.authenticate_user(db, form_data.username, form_data.password)
+    """ログイン（emailとパスワード）"""
+    user = user_service.authenticate_user(db, credentials.email, credentials.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="ユーザー名またはパスワードが正しくありません",
+            detail="メールアドレスまたはパスワードが正しくありません",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.email}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/me", response_model=User)
+@router.get("/me", response_model=UserRead)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)]
 ):

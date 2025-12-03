@@ -54,28 +54,11 @@ class ApiClient {
   }
 
   // 認証API
-  async login(username: string, password: string): Promise<TokenResponse> {
-    // OAuth2PasswordRequestFormの形式に合わせる
-    const formData = new URLSearchParams()
-    formData.append("username", username)
-    formData.append("password", password)
-
-    const response = await fetch(`${this.baseUrl}/api/auth/login`, {
+  async login(email: string, password: string): Promise<TokenResponse> {
+    return this.request<TokenResponse>("/api/auth/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: formData,
+      body: JSON.stringify({ email, password }),
     })
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        detail: "ログインに失敗しました",
-      }))
-      throw new Error(error.detail || "ログインに失敗しました")
-    }
-
-    return response.json()
   }
 
   async register(data: RegisterRequest): Promise<User> {

@@ -6,8 +6,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from app.api.router import api_router
 from app.core.config import settings
-from app.database import engine, Base
-from app.models import User  # モデルをインポートしてBase.metadataに登録
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -27,8 +25,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# データベーステーブルを作成
-Base.metadata.create_all(bind=engine)
+# マイグレーションは Alembic で管理
+# テーブル作成: docker compose exec app alembic upgrade head
 
 # APIルーターを追加
 app.include_router(api_router, prefix="/api")
@@ -43,7 +41,7 @@ if frontend_dist.exists():
     async def serve_frontend(full_path: str):
         """フロントエンドのSPAルーティング対応"""
         # API以外のルートはReactアプリを返す
-        if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("health"):
+        if full_path.startswith("api/") or full_path.startswith("docs"):
             return {"detail": "Not Found"}
 
         file_path = frontend_dist / full_path
@@ -52,9 +50,3 @@ if frontend_dist.exists():
 
         # SPAなので全てindex.htmlを返す
         return FileResponse(frontend_dist / "index.html")
-
-
-@app.get("/health")
-async def health():
-    """ヘルスチェックエンドポイント"""
-    return {"status": "ok"}

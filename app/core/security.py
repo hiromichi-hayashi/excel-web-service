@@ -1,20 +1,25 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import jwt
-from passlib.context import CryptContext
+import bcrypt
 from app.core.config import settings
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """パスワードを検証"""
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(
+        plain_password.encode('utf-8'),
+        hashed_password.encode('utf-8') if isinstance(hashed_password, str) else hashed_password
+    )
 
 
 def get_password_hash(password: str) -> str:
     """パスワードをハッシュ化"""
-    return pwd_context.hash(password)
+    # bcrypt は72バイトまでしか対応していないため切り詰める
+    password_bytes = password.encode('utf-8')[:72]
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode('utf-8')
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
