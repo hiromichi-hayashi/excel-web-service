@@ -1,11 +1,19 @@
 from fastapi import FastAPI
-import os
+from app.api.v1.api import api_router
+from app.core.config import settings
+from app.database import engine, Base
 
 app = FastAPI(
-    title="Excel Web Service",
+    title=settings.PROJECT_NAME,
     description="FastAPIを使用したExcel処理Webサービス",
-    version="1.0.0"
+    version=settings.VERSION
 )
+
+# データベーステーブルを作成
+Base.metadata.create_all(bind=engine)
+
+# API v1ルーターを追加
+app.include_router(api_router, prefix="/api/v1")
 
 
 @app.get("/")
@@ -14,19 +22,11 @@ async def root():
     return {
         "message": "Welcome to Excel Web Service",
         "docs": "/docs",
-        "python_version": "3.14.0",
-        "database": os.getenv("DATABASE_URL", "Not configured")
+        "version": settings.VERSION,
     }
 
 
-@app.get("/api/info")
-async def info():
-    """システム情報エンドポイント"""
-    return {
-        "app_name": "Excel Web Service",
-        "version": "1.0.0",
-        "environment": {
-            "database_url": os.getenv("DATABASE_URL", "Not set"),
-            "pythonunbuffered": os.getenv("PYTHONUNBUFFERED", "Not set")
-        }
-    }
+@app.get("/health")
+async def health():
+    """ヘルスチェックエンドポイント"""
+    return {"status": "ok"}
