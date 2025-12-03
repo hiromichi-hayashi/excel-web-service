@@ -8,7 +8,7 @@
         "git+https://github.com/oraios/serena",
         "serena-mcp-server",
         "--project",
-        "/Users/hh-pd09/Project/lumina-cms"
+        "/Users/hh-pd09/Project/excel-web-service"
       ],
       "env": {}
     },
@@ -18,7 +18,7 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-postgres",
-        "postgresql://developer:password@localhost:5432/lumina_cms"
+        "postgresql://postgres:postgres@localhost:5434/excel_web_service"
       ],
       "env": {}
     }

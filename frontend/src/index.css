@@ -21,8 +21,10 @@
   --color-input: oklch(91.4% 0.01 257.22);
   --color-ring: oklch(9.8% 0.016 285.75);
   --radius: 0.5rem;
+}
 
-  @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
+  :root {
     --color-background: oklch(9.8% 0.016 285.75);
     --color-foreground: oklch(98% 0.007 264.54);
     --color-card: oklch(9.8% 0.016 285.75);

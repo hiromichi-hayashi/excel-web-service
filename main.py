@@ -7,6 +7,7 @@ from fastapi.responses import FileResponse
 from app.api.router import api_router
 from app.core.config import settings
 from app.database import engine, Base
+from app.models import User  # モデルをインポートしてBase.metadataに登録
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
