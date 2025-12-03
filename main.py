@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from app.api.router import api_router
@@ -11,6 +12,18 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     description="FastAPIを使用したExcel処理Webサービス",
     version=settings.VERSION
+)
+
+# CORS設定（開発環境用）
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",  # Vite開発サーバー
+        "http://localhost:8000",  # FastAPI
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # データベーステーブルを作成
