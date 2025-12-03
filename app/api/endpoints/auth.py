@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.security import create_access_token
-from app.crud import user as crud_user
+from app.services import user as user_service
 from app.database import get_db
 from app.schemas.user import User, UserCreate, Token, TokenData
 
@@ -36,7 +36,7 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    user = crud_user.get_user_by_username(db, username=token_data.username)
+    user = user_service.get_user_by_username(db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -54,24 +54,7 @@ async def get_current_active_user(
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     """新規ユーザー登録"""
-    # メールアドレスの重複チェック
-    db_user = crud_user.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="このメールアドレスは既に登録されています"
-        )
-
-    # ユーザー名の重複チェック
-    db_user = crud_user.get_user_by_username(db, username=user.username)
-    if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="このユーザー名は既に使用されています"
-        )
-
-    # ユーザー作成
-    return crud_user.create_user(db=db, user=user)
+    return user_service.register_user(db=db, user=user)
 
 
 @router.post("/login", response_model=Token)
@@ -80,7 +63,7 @@ def login(
     db: Session = Depends(get_db)
 ):
     """ログイン"""
-    user = crud_user.authenticate_user(db, form_data.username, form_data.password)
+    user = user_service.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
