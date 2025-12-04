@@ -13,6 +13,10 @@ app = FastAPI(
     version=settings.VERSION
 )
 
+# アップロードディレクトリの初期化
+upload_dir = Path(settings.UPLOAD_DIR)
+upload_dir.mkdir(parents=True, exist_ok=True)
+
 # CORS設定（開発環境用）
 app.add_middleware(
     CORSMiddleware,
