@@ -17,5 +17,11 @@ class Settings:
     ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
+    # ファイルストレージ設定
+    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "./uploads")
+    MAX_UPLOAD_SIZE: int = int(os.getenv("MAX_UPLOAD_SIZE", "10485760"))  # 10MB
+    ALLOWED_EXTENSIONS: list[str] = [".xlsx", ".xls", ".csv"]
+    MAX_ROWS_PREVIEW: int = 100  # プレビュー行数
+
 
 settings = Settings()

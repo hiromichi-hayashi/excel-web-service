@@ -8,7 +8,9 @@ from alembic import context
 
 # SQLModel のモジュールをインポート
 from sqlmodel import SQLModel
-from app.models import User  # モデルをインポートしてメタデータに登録
+from app.models.user import User  # モデルをインポートしてメタデータに登録
+from app.models.file import File
+from app.models.template import Template
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
