@@ -5,7 +5,6 @@
     docker compose exec app python -m app.database.seeds.user_seeder
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -13,9 +12,10 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from sqlmodel import Session, select
+
+from app.core.security import get_password_hash
 from app.database import engine
 from app.models.user import User
-from app.core.security import get_password_hash
 
 
 def seed_users():
@@ -28,7 +28,7 @@ def seed_users():
             if existing_users > 0:
                 print(f"既に {existing_users} 件のユーザーが存在します。")
                 response = input("既存データを削除して再投入しますか？ (y/N): ")
-                if response.lower() == 'y':
+                if response.lower() == "y":
                     # すべてのユーザーを削除
                     for user in db.exec(statement).all():
                         db.delete(user)
@@ -59,10 +59,7 @@ def seed_users():
 
             for user_data in users:
                 password = user_data.pop("password")
-                user = User(
-                    **user_data,
-                    password=get_password_hash(password)
-                )
+                user = User(**user_data, password=get_password_hash(password))
                 db.add(user)
 
             db.commit()

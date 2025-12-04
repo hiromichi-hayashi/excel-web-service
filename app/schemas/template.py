@@ -1,17 +1,18 @@
 from datetime import datetime
+
 from sqlmodel import SQLModel
-from typing import Optional, List
 
 
 class TemplateRead(SQLModel):
     """テンプレート読み取りスキーマ"""
+
     id: int
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     file_type: str
-    thumbnail_path: Optional[str] = None
+    thumbnail_path: str | None = None
     is_public: bool
-    created_by: Optional[int] = None
+    created_by: int | None = None
     created_at: datetime
 
     class Config:
@@ -20,5 +21,6 @@ class TemplateRead(SQLModel):
 
 class TemplateListResponse(SQLModel):
     """テンプレート一覧レスポンススキーマ"""
-    templates: List[TemplateRead]
+
+    items: list[TemplateRead]
     total: int

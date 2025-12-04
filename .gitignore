@@ -28,6 +28,7 @@ share/python-wheels/
 MANIFEST
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 .dmypy.json
 dmypy.json
 .coverage
@@ -38,6 +39,7 @@ htmlcov/
 venv/
 ENV/
 env/
+uploads/
 
 # Node.js / Bun
 node_modules/
@@ -87,3 +89,6 @@ Thumbs.db
 
 # Documentation (local only)
 docs/
+
+.claude/
+.serena/

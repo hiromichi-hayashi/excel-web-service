@@ -17,8 +17,65 @@ dependencies = [
     "openpyxl>=3.1.2",
     "pandas>=2.2.0",
     "aiofiles>=23.2.1",
+    "chardet>=5.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.0",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.ruff]
+# 行の長さ
+line-length = 100
+
+# Python 3.14をターゲット
+target-version = "py314"
+
+# 除外するディレクトリ
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "*.egg-info",
+    "uploads",
+]
+
+[tool.ruff.lint]
+# 有効にするルール
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+
+# 無視するルール
+ignore = [
+    "E501",  # 行が長すぎる（Ruffのフォーマッターが処理）
+    "B008",  # 関数呼び出しの引数でのデフォルト値（FastAPIのDependsで必要）
+]
+
+# ファイルごとの無視設定
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # 未使用のimport（__init__.pyでは一般的）
+
+[tool.ruff.format]
+# シングルクォートを使用
+quote-style = "double"
+
+# インデント
+indent-style = "space"
+
+# 行末
+line-ending = "lf"

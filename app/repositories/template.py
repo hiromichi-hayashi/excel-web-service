@@ -1,14 +1,11 @@
-from typing import Optional, List
 from sqlmodel import Session, select
+
 from app.models.template import Template
 
 
 def get_templates(
-    db: Session,
-    skip: int = 0,
-    limit: int = 100,
-    is_public: Optional[bool] = None
-) -> List[Template]:
+    db: Session, skip: int = 0, limit: int = 100, is_public: bool | None = None
+) -> list[Template]:
     """テンプレート一覧を取得"""
     statement = select(Template).offset(skip).limit(limit)
 
@@ -19,7 +16,7 @@ def get_templates(
     return list(db.exec(statement).all())
 
 
-def count_templates(db: Session, is_public: Optional[bool] = None) -> int:
+def count_templates(db: Session, is_public: bool | None = None) -> int:
     """テンプレート総数を取得"""
     statement = select(Template)
 
@@ -29,9 +26,13 @@ def count_templates(db: Session, is_public: Optional[bool] = None) -> int:
     return len(list(db.exec(statement).all()))
 
 
-def get_template(db: Session, template_id: int) -> Optional[Template]:
+def get_template(db: Session, template_id: int, is_public: bool | None = None) -> Template | None:
     """テンプレートをIDで取得"""
     statement = select(Template).where(Template.id == template_id)
+
+    if is_public is not None:
+        statement = statement.where(Template.is_public == is_public)
+
     return db.exec(statement).first()
 
 
