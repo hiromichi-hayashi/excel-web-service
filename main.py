@@ -1,17 +1,22 @@
-import os
 from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
 from app.api.router import api_router
 from app.core.config import settings
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="FastAPIを使用したExcel処理Webサービス",
-    version=settings.VERSION
+    version=settings.VERSION,
 )
+
+# アップロードディレクトリの初期化
+upload_dir = Path(settings.UPLOAD_DIR)
+upload_dir.mkdir(parents=True, exist_ok=True)
 
 # CORS設定（開発環境用）
 app.add_middleware(

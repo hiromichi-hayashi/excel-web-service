@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 
-export function RegisterForm() {
+export const RegisterForm = () => {
   const { register } = useAuth()
   const [email, setEmail] = useState("")
   const [username, setUsername] = useState("")

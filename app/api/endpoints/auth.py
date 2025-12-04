@@ -1,16 +1,17 @@
 from datetime import timedelta
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlmodel import Session
 
 from app.core.config import settings
 from app.core.security import create_access_token
-from app.services import user as user_service
 from app.database import get_db
-from app.schemas.user import UserRead, UserCreate, Token, TokenData, UserLogin
 from app.models.user import User
+from app.schemas.user import Token, TokenData, UserCreate, UserLogin, UserRead
+from app.services import user as user_service
 
 router = APIRouter()
 
@@ -18,8 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    db: Session = Depends(get_db)
+    token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
 ) -> User:
     """現在のユーザーを取得"""
     credentials_exception = HTTPException(
@@ -35,7 +35,7 @@ async def get_current_user(
             raise credentials_exception
         token_data = TokenData(email=email)
     except JWTError:
-        raise credentials_exception
+        raise credentials_exception from None
 
     user = user_service.get_user_by_email(db, email=token_data.email)
     if user is None:
@@ -43,9 +43,7 @@ async def get_current_user(
     return user
 
 
-async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
-) -> User:
+async def get_current_active_user(current_user: Annotated[User, Depends(get_current_user)]) -> User:
     """アクティブなユーザーを取得"""
     return current_user
 
@@ -57,10 +55,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
-def login(
-    credentials: UserLogin,
-    db: Session = Depends(get_db)
-):
+def login(credentials: UserLogin, db: Session = Depends(get_db)):
     """ログイン（emailとパスワード）"""
     user = user_service.authenticate_user(db, credentials.email, credentials.password)
     if not user:
@@ -71,15 +66,11 @@ def login(
         )
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
+    access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.get("/me", response_model=UserRead)
-async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_active_user)]
-):
+def read_users_me(current_user: Annotated[User, Depends(get_current_active_user)]):
     """現在のユーザー情報を取得"""
     return current_user
