@@ -1,6 +1,9 @@
 import { useAuth } from "@/contexts/AuthContext"
 import { AuthPage } from "@/components/auth/AuthPage"
-import { Dashboard } from "@/components/Dashboard"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { routes } from "@/routes"
+
+const router = createBrowserRouter(routes)
 
 function App() {
   const { user, isLoading } = useAuth()
@@ -16,11 +19,11 @@ function App() {
     )
   }
 
-  if (user) {
-    return <Dashboard />
+  if (!user) {
+    return <AuthPage />
   }
 
-  return <AuthPage />
+  return <RouterProvider router={router} />
 }
 
 export default App

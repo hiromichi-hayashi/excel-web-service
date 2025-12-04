@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, username: string, password: string) => {
     try {
-      const newUser = await apiClient.register({ email, username, password })
+      await apiClient.register({ email, username, password })
 
       // 登録後に自動ログイン
       await login(email, password)

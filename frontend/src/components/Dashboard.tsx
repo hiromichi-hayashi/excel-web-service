@@ -47,21 +47,11 @@ export function Dashboard() {
                 <p className="text-lg font-medium">{user.email}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">ステータス</p>
+                <p className="text-sm font-medium text-muted-foreground">登録日</p>
                 <p className="text-lg font-medium">
-                  {user.is_active ? (
-                    <span className="text-green-600">アクティブ</span>
-                  ) : (
-                    <span className="text-red-600">非アクティブ</span>
-                  )}
+                  {new Date(user.created_at).toLocaleDateString('ja-JP')}
                 </p>
               </div>
-              {user.is_superuser && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">権限</p>
-                  <p className="text-lg font-medium text-blue-600">管理者</p>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>

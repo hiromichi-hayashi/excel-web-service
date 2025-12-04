@@ -1,4 +1,4 @@
-import type { User, LoginRequest, RegisterRequest, TokenResponse } from "@/types/auth"
+import type { User, RegisterRequest, TokenResponse } from "@/types/auth"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
@@ -29,9 +29,9 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     }
 
     if (this.token) {
