@@ -6,7 +6,7 @@ import { FileList } from "@/components/files/FileList"
 import { fileApi } from "@/services/fileApi"
 import type { File } from "@/types/file"
 
-export function FilesPage() {
+export const FilesPage = () => {
   const [files, setFiles] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -20,7 +20,10 @@ export function FilesPage() {
       setFiles(response.items)
       setTotalPages(response.total_pages)
     } catch (error) {
-      console.error("Failed to fetch files:", error)
+      if (import.meta.env.MODE === "development") {
+        console.error("Failed to fetch files:", error)
+      }
+      alert("ファイルの読み込みに失敗しました")
     } finally {
       setIsLoading(false)
     }
@@ -35,9 +38,26 @@ export function FilesPage() {
 
     try {
       await fileApi.delete(id)
-      await fetchFiles(page)
+      try {
+        const response = await fileApi.list(page, pageSize)
+        if (response.items.length === 0 && page > 1) {
+          setPage(page - 1)
+        } else {
+          setFiles(response.items)
+          setTotalPages(response.total_pages)
+        }
+      } catch (refreshError) {
+        if (import.meta.env.MODE === "development") {
+          console.error("Failed to refresh file list:", refreshError)
+        }
+        alert(
+          "ファイルは削除されましたが、一覧の更新に失敗しました。ページを再読み込みしてください。"
+        )
+      }
     } catch (error) {
-      console.error("Failed to delete file:", error)
+      if (import.meta.env.MODE === "development") {
+        console.error("Failed to delete file:", error)
+      }
       alert("ファイルの削除に失敗しました")
     }
   }
@@ -55,9 +75,12 @@ export function FilesPage() {
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
-      window.URL.revokeObjectURL(url)
+      // Delay revocation to ensure download starts
+      setTimeout(() => window.URL.revokeObjectURL(url), 100)
     } catch (error) {
-      console.error("Failed to download file:", error)
+      if (import.meta.env.MODE === "development") {
+        console.error("Failed to download file:", error)
+      }
       alert("ファイルのダウンロードに失敗しました")
     }
   }
@@ -65,16 +88,9 @@ export function FilesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            ファイル管理
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            アップロードしたファイルの一覧
-          </p>
-        </div>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">ファイル管理</h1>
         <Button asChild>
-          <Link to="/files/upload">
+          <Link to="/files/upload" className="flex items-center">
             <Plus className="mr-2 h-4 w-4" />
             新規アップロード
           </Link>
@@ -87,11 +103,7 @@ export function FilesPage() {
         </div>
       ) : (
         <>
-          <FileList
-            files={files}
-            onDelete={handleDelete}
-            onDownload={handleDownload}
-          />
+          <FileList files={files} onDelete={handleDelete} onDownload={handleDownload} />
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between">

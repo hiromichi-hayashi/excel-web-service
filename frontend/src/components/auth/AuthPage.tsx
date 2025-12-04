@@ -8,7 +8,7 @@ import { toast } from "sonner"
 
 type AuthMode = "login" | "signup"
 
-export function AuthPage() {
+export const AuthPage = () => {
   const { login, register } = useAuth()
   const [mode, setMode] = useState<AuthMode>("login")
   const [email, setEmail] = useState("")
@@ -36,7 +36,13 @@ export function AuthPage() {
         toast.success("登録に成功しました。ログイン中...")
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : mode === "login" ? "ログインに失敗しました" : "登録に失敗しました")
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : mode === "login"
+            ? "ログインに失敗しました"
+            : "登録に失敗しました"
+      )
     } finally {
       setIsLoading(false)
     }
@@ -123,8 +129,8 @@ export function AuthPage() {
                   ? "ログイン中..."
                   : "登録中..."
                 : mode === "login"
-                ? "ログイン"
-                : "登録"}
+                  ? "ログイン"
+                  : "登録"}
             </Button>
           </form>
 
@@ -136,7 +142,9 @@ export function AuthPage() {
               disabled={isLoading}
               className="text-sm"
             >
-              {mode === "login" ? "アカウントをお持ちでない方はこちら" : "すでにアカウントをお持ちの方はこちら"}
+              {mode === "login"
+                ? "アカウントをお持ちでない方はこちら"
+                : "すでにアカウントをお持ちの方はこちら"}
             </Button>
           </div>
         </CardContent>

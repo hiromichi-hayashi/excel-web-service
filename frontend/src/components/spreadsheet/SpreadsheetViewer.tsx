@@ -11,7 +11,7 @@ interface SpreadsheetViewerProps {
   height?: string
 }
 
-export function SpreadsheetViewer({ data, height = "600px" }: SpreadsheetViewerProps) {
+export const SpreadsheetViewer = ({ data, height = "600px" }: SpreadsheetViewerProps) => {
   // 列定義を生成
   const columnDefs = useMemo<ColDef[]>(() => {
     return data.headers.map((header, index) => ({
@@ -55,7 +55,6 @@ export function SpreadsheetViewer({ data, height = "600px" }: SpreadsheetViewerP
           pagination={true}
           paginationPageSize={100}
           paginationPageSizeSelector={[50, 100, 200, 500]}
-          suppressCellFocus={true}
         />
       </div>
     </div>

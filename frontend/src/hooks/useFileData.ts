@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { fileApi } from "@/services/fileApi"
 import type { File, FileDataResponse } from "@/types/file"
 
@@ -10,13 +10,13 @@ interface UseFileDataResult {
   refetch: () => Promise<void>
 }
 
-export function useFileData(fileId: number | undefined, maxRows?: number): UseFileDataResult {
+export const useFileData = (fileId: number | undefined, maxRows?: number): UseFileDataResult => {
   const [file, setFile] = useState<File | null>(null)
   const [data, setData] = useState<FileDataResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!fileId) {
       setIsLoading(false)
       return
@@ -38,11 +38,11 @@ export function useFileData(fileId: number | undefined, maxRows?: number): UseFi
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [fileId, maxRows])
 
   useEffect(() => {
     fetchData()
-  }, [fileId, maxRows])
+  }, [fetchData])
 
   return {
     file,

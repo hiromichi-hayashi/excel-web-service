@@ -1,44 +1,50 @@
 import { useEffect, useState } from "react"
-import { FileText, FolderOpen, Database } from "lucide-react"
-import { useAuth } from "@/contexts/AuthContext"
+import { FileText, FileSpreadsheet } from "lucide-react"
 import { fileApi } from "@/services/fileApi"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { RecentFiles } from "@/components/dashboard/RecentFiles"
 import { QuickActions } from "@/components/dashboard/QuickActions"
-import type { File } from "@/types/file"
+import type { File, Statistics } from "@/types/file"
 
-export function DashboardPage() {
-  const { user } = useAuth()
+export const DashboardPage = () => {
   const [files, setFiles] = useState<File[]>([])
+  const [statistics, setStatistics] = useState<Statistics>({
+    total_files: 0,
+    total_templates: 0,
+  })
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchFiles = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fileApi.list(1, 10)
-        setFiles(response.items)
+        // 統計情報と最近のファイルを並行取得
+        const [statsResponse, filesResponse] = await Promise.all([
+          fileApi.getStatistics(),
+          fileApi.list(1, 10),
+        ])
+        setStatistics(statsResponse)
+        setFiles(filesResponse.items || [])
       } catch (error) {
-        console.error("Failed to fetch files:", error)
+        if (import.meta.env.MODE === "development") {
+          console.error("Failed to fetch dashboard data:", error)
+        }
+        setFiles([])
+        setStatistics({
+          total_files: 0,
+          total_templates: 0,
+        })
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchFiles()
+    fetchData()
   }, [])
-
-  const totalSize = files.reduce((sum, file) => sum + file.file_size, 0)
-  const totalRows = files.reduce((sum, file) => sum + (file.rows_count || 0), 0)
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          ダッシュボード
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          ようこそ、{user?.username}さん
-        </p>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">ダッシュボード</h1>
       </div>
 
       {isLoading ? (
@@ -47,24 +53,18 @@ export function DashboardPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <StatsCard
               title="ファイル数"
-              value={files.length}
+              value={statistics.total_files}
               icon={FileText}
               description="アップロード済み"
             />
             <StatsCard
-              title="合計データ行数"
-              value={totalRows.toLocaleString()}
-              icon={Database}
-              description="全ファイルの合計"
-            />
-            <StatsCard
-              title="使用容量"
-              value={`${(totalSize / 1024 / 1024).toFixed(2)} MB`}
-              icon={FolderOpen}
-              description="ストレージ使用量"
+              title="テンプレート数"
+              value={statistics.total_templates}
+              icon={FileSpreadsheet}
+              description="利用可能"
             />
           </div>
 

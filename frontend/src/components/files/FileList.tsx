@@ -31,7 +31,7 @@ function formatFileSize(bytes: number): string {
   const k = 1024
   const sizes = ["Bytes", "KB", "MB", "GB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i]
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
 }
 
 function getStatusBadge(status: string) {
@@ -49,19 +49,17 @@ function getStatusBadge(status: string) {
   }
 }
 
-export function FileList({ files, onDelete, onDownload }: FileListProps) {
-  if (files.length === 0) {
+export const FileList = ({ files, onDelete, onDownload }: FileListProps) => {
+  if (!files || files.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400">
-          ファイルがまだアップロードされていません
-        </p>
+        <p className="text-gray-500 dark:text-gray-400">ファイルがまだアップロードされていません</p>
       </div>
     )
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 border-gray-400 dark:border-gray-600">
       <Table>
         <TableHeader>
           <TableRow>
@@ -79,10 +77,7 @@ export function FileList({ files, onDelete, onDownload }: FileListProps) {
           {files.map((file) => (
             <TableRow key={file.id}>
               <TableCell className="font-medium">
-                <Link
-                  to={`/files/${file.id}`}
-                  className="hover:underline text-primary"
-                >
+                <Link to={`/files/${file.id}`} className="hover:underline text-primary">
                   {file.original_filename}
                 </Link>
               </TableCell>
@@ -113,9 +108,7 @@ export function FileList({ files, onDelete, onDownload }: FileListProps) {
                         表示
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => onDownload?.(file.id)}
-                    >
+                    <DropdownMenuItem onClick={() => onDownload?.(file.id)}>
                       <Download className="mr-2 h-4 w-4" />
                       ダウンロード
                     </DropdownMenuItem>

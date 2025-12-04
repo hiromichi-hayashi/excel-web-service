@@ -7,7 +7,7 @@ import { SpreadsheetViewer } from "@/components/spreadsheet/SpreadsheetViewer"
 import { useFileData } from "@/hooks/useFileData"
 import { fileApi } from "@/services/fileApi"
 
-export function FileViewPage() {
+export const FileViewPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const fileId = id ? parseInt(id, 10) : undefined
@@ -75,20 +75,15 @@ export function FileViewPage() {
     <div className="space-y-6">
       <div>
         <Button variant="ghost" asChild className="mb-4">
-          <Link to="/files">
+          <Link to="/files" className="flex items-center">
             <ArrowLeft className="mr-2 h-4 w-4" />
             ファイル一覧に戻る
           </Link>
         </Button>
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              {file.original_filename}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              {file.file_type.toUpperCase()} ファイル
-            </p>
-          </div>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            {file.original_filename}
+          </h1>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleDownload}>
               <Download className="mr-2 h-4 w-4" />
@@ -110,21 +105,15 @@ export function FileViewPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">ファイルサイズ</p>
-              <p className="text-lg font-medium">
-                {(file.file_size / 1024 / 1024).toFixed(2)} MB
-              </p>
+              <p className="text-lg font-medium">{(file.file_size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">行数</p>
-              <p className="text-lg font-medium">
-                {file.rows_count?.toLocaleString() || "-"}
-              </p>
+              <p className="text-lg font-medium">{file.rows_count?.toLocaleString() || "-"}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">列数</p>
-              <p className="text-lg font-medium">
-                {file.columns_count?.toLocaleString() || "-"}
-              </p>
+              <p className="text-lg font-medium">{file.columns_count?.toLocaleString() || "-"}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">ステータス</p>

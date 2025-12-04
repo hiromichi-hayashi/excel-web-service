@@ -50,3 +50,8 @@ export interface TemplateListResponse {
 export interface FileUpdateData {
   description?: string
 }
+
+export interface Statistics {
+  total_files: number
+  total_templates: number
+}

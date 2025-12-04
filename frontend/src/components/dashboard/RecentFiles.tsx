@@ -15,10 +15,10 @@ function formatFileSize(bytes: number): string {
   const k = 1024
   const sizes = ["Bytes", "KB", "MB", "GB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i]
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
 }
 
-export function RecentFiles({ files }: RecentFilesProps) {
+export const RecentFiles = ({ files }: RecentFilesProps) => {
   if (files.length === 0) {
     return (
       <Card>
@@ -29,9 +29,7 @@ export function RecentFiles({ files }: RecentFilesProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            まだファイルがありません
-          </p>
+          <p className="text-sm text-muted-foreground">まだファイルがありません</p>
         </CardContent>
       </Card>
     )
@@ -50,10 +48,10 @@ export function RecentFiles({ files }: RecentFilesProps) {
           {files.slice(0, 5).map((file) => (
             <div
               key={file.id}
-              className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+              className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors border-gray-300 dark:border-gray-600"
             >
               <div className="flex items-center space-x-3 flex-1 min-w-0">
-                <FileText className="h-5 w-5 text-primary flex-shrink-0" />
+                <FileText className="h-5 w-5 text-primary shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                     {file.original_filename}
@@ -67,11 +65,7 @@ export function RecentFiles({ files }: RecentFilesProps) {
                   </p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                asChild
-              >
+              <Button variant="ghost" size="sm" asChild>
                 <Link to={`/files/${file.id}`}>
                   <Eye className="h-4 w-4" />
                 </Link>

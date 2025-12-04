@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
-export function QuickActions() {
+export const QuickActions = () => {
   const actions = [
     {
       icon: Upload,
@@ -36,24 +36,15 @@ export function QuickActions() {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {actions.map((action) => (
-            <Button
-              key={action.label}
-              variant="outline"
-              asChild
-              className="h-auto p-4"
-            >
+            <Button key={action.label} variant="outline" asChild className="h-auto p-4">
               <Link to={action.to}>
                 <div className="flex flex-col items-center text-center space-y-2">
                   <div className={`p-3 rounded-full ${action.color}`}>
                     <action.icon className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {action.label}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {action.description}
-                    </p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">{action.label}</p>
+                    <p className="text-xs text-muted-foreground">{action.description}</p>
                   </div>
                 </div>
               </Link>

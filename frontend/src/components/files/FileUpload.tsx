@@ -11,7 +11,7 @@ interface FileUploadProps {
   onUploadError?: (error: Error) => void
 }
 
-export function FileUpload({ onUploadSuccess, onUploadError }: FileUploadProps) {
+export const FileUpload = ({ onUploadSuccess, onUploadError }: FileUploadProps) => {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -34,10 +34,13 @@ export function FileUpload({ onUploadSuccess, onUploadError }: FileUploadProps) 
     maxFiles: 1,
     maxSize: 10 * 1024 * 1024, // 10MB
     onDropRejected: (fileRejections) => {
+      if (fileRejections.length === 0) return
       const rejection = fileRejections[0]
-      if (rejection.errors[0].code === "file-too-large") {
+      if (rejection.errors.length === 0) return
+      const errorCode = rejection.errors[0].code
+      if (errorCode === "file-too-large") {
         setError("ファイルサイズは10MB以下にしてください")
-      } else if (rejection.errors[0].code === "file-invalid-type") {
+      } else if (errorCode === "file-invalid-type") {
         setError("xlsx, xls, csv ファイルのみアップロード可能です")
       } else {
         setError("ファイルのアップロードに失敗しました")
@@ -94,21 +97,21 @@ export function FileUpload({ onUploadSuccess, onUploadError }: FileUploadProps) 
       <div
         {...getRootProps()}
         className={cn(
-          "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors",
+          "border-2 border-dashed rounded-lg p-16 text-center cursor-pointer transition-colors min-h-[400px] flex flex-col items-center justify-center bg-white dark:bg-gray-800",
           isDragActive
-            ? "border-primary bg-primary/5"
-            : "border-gray-300 dark:border-gray-700 hover:border-primary",
+            ? "border-primary bg-primary/10 dark:bg-primary/20"
+            : "border-gray-400 dark:border-gray-600 hover:border-primary hover:bg-gray-100 dark:hover:bg-gray-700",
           uploading && "pointer-events-none opacity-50"
         )}
       >
         <input {...getInputProps()} />
-        <Upload className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" />
-        <p className="mt-4 text-sm font-medium text-gray-900 dark:text-gray-100">
+        <Upload className="mx-auto h-16 w-16 text-gray-400 dark:text-gray-600" />
+        <p className="mt-6 text-lg font-medium text-gray-900 dark:text-gray-100">
           {isDragActive
             ? "ここにファイルをドロップ"
             : "クリックまたはドラッグ&ドロップでファイルをアップロード"}
         </p>
-        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+        <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
           xlsx, xls, csv ファイル（最大10MB）
         </p>
       </div>
@@ -120,7 +123,7 @@ export function FileUpload({ onUploadSuccess, onUploadError }: FileUploadProps) 
       )}
 
       {selectedFile && (
-        <div className="border rounded-lg p-4 space-y-4">
+        <div className="border rounded-lg p-4 space-y-4 bg-white dark:bg-gray-800 border-gray-400 dark:border-gray-600">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <FileIcon className="h-5 w-5 text-primary" />
@@ -134,11 +137,7 @@ export function FileUpload({ onUploadSuccess, onUploadError }: FileUploadProps) 
               </div>
             </div>
             {!uploading && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleRemove}
-              >
+              <Button variant="ghost" size="sm" onClick={handleRemove}>
                 <X className="h-4 w-4" />
               </Button>
             )}
@@ -154,10 +153,7 @@ export function FileUpload({ onUploadSuccess, onUploadError }: FileUploadProps) 
           )}
 
           {!uploading && (
-            <Button
-              onClick={handleUpload}
-              className="w-full"
-            >
+            <Button onClick={handleUpload} className="w-full">
               <Upload className="mr-2 h-4 w-4" />
               アップロード
             </Button>

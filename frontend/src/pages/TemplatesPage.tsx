@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { templateApi } from "@/services/fileApi"
 import type { Template } from "@/types/file"
 
-export function TemplatesPage() {
+export const TemplatesPage = () => {
   const navigate = useNavigate()
   const [templates, setTemplates] = useState<Template[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -40,12 +40,7 @@ export function TemplatesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          テンプレート
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          利用可能なテンプレートから新規ファイルを作成できます
-        </p>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">テンプレート</h1>
       </div>
 
       {isLoading ? (
@@ -54,9 +49,7 @@ export function TemplatesPage() {
         </div>
       ) : templates.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 dark:text-gray-400">
-            テンプレートがまだありません
-          </p>
+          <p className="text-gray-500 dark:text-gray-400">テンプレートがまだありません</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -70,19 +63,14 @@ export function TemplatesPage() {
                   </Badge>
                 </div>
                 <CardTitle className="mt-4">{template.name}</CardTitle>
-                <CardDescription>
-                  {template.description || "説明なし"}
-                </CardDescription>
+                <CardDescription>{template.description || "説明なし"}</CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col justify-end">
                 <div className="space-y-2">
                   <div className="text-sm text-muted-foreground">
                     形式: <Badge variant="outline">{template.file_type.toUpperCase()}</Badge>
                   </div>
-                  <Button
-                    className="w-full"
-                    onClick={() => handleUseTemplate(template.id)}
-                  >
+                  <Button className="w-full" onClick={() => handleUseTemplate(template.id)}>
                     <Download className="mr-2 h-4 w-4" />
                     このテンプレートを使用
                   </Button>

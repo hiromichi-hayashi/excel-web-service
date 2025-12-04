@@ -1,15 +1,8 @@
 import { NavLink } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
-import {
-  LayoutDashboard,
-  FileText,
-  Upload,
-  FileSpreadsheet,
-  LogOut,
-  User,
-} from "lucide-react"
+import { LayoutDashboard, FileText, FileSpreadsheet, LogOut, User } from "lucide-react"
 
-export function Sidebar() {
+export const Sidebar = () => {
   const { user, logout } = useAuth()
 
   const navItems = [
@@ -24,11 +17,6 @@ export function Sidebar() {
       label: "ファイル管理",
     },
     {
-      to: "/files/upload",
-      icon: Upload,
-      label: "アップロード",
-    },
-    {
       to: "/templates",
       icon: FileSpreadsheet,
       label: "テンプレート",
@@ -40,9 +28,7 @@ export function Sidebar() {
       {/* ロゴエリア */}
       <div className="flex h-16 items-center border-b border-gray-200 px-6 dark:border-gray-700">
         <FileSpreadsheet className="mr-2 h-6 w-6 text-blue-600" />
-        <span className="text-lg font-bold text-gray-800 dark:text-gray-100">
-          Excel Service
-        </span>
+        <span className="text-lg font-bold text-gray-800 dark:text-gray-100">Excel Service</span>
       </div>
 
       {/* ナビゲーション */}
@@ -74,9 +60,7 @@ export function Sidebar() {
             <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
               {user?.username}
             </p>
-            <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-              {user?.email}
-            </p>
+            <p className="truncate text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
           </div>
         </div>
 
